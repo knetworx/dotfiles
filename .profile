@@ -48,10 +48,16 @@ fi
 #export ENV_TYPE="mac"
 
 # My custom file for making environment-dependent settings
-export ENV_TYPE=`uname -s | awk '{print tolower($0)}'`
-if [ "$ENV_TYPE" = "darwin" ]; then
-	export ENV_TYPE='mac'
-fi
+#export ENV_TYPE=`uname -s | awk '{print tolower($0)}'`
+#if [ "$ENV_TYPE" = "darwin" ]; then
+#	export ENV_TYPE='mac'
+#fi
+case $(uname -s | awk '{print tolower($0)}') in
+	darwin*)		export ENV_TYPE='mac' ;;
+	linux*)			export ENV_TYPE='linux' ;;
+	mingw*|msys*)	export ENV_TYPE='linux' ;;
+	*)				export ENV_TYPE='unknown' ;;
+esac
 
 printscriptlocation
 

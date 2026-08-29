@@ -1,7 +1,13 @@
 # vi:set filetype=sh:
 # Use this file to change which settings get used in files like .bashrc and .bash_aliases
 # eg 'mac', 'linux'
-myenv=`uname -s | awk '{print tolower($0)}'`
-if [ "$myenv" == "darwin" ];then myenv='mac';fi
+case $(uname -s | awk '{print tolower($0)}') in
+	darwin*)	myenv='mac' ;;
+	linux*)		myenv='linux' ;;
+	mingw*|msys*)	myenv='linux' ;;
+	*)			myenv='unknown' ;;
+esac
+#myenv=`uname -s | awk '{print tolower($0)}'`
+#if [ "$myenv" == "darwin" ];then myenv='mac';fi
 # eg 'battleserver', 'chatserver'
 #envsubtype='chatserver'

@@ -25,7 +25,7 @@ if [[ $IS_WINDOWS == 1 ]]; then
 	fi
 fi
 
-lnfiles=(.bashrc .aliases .functions .env_vars .gvimrc .profile vimdiff.sh vimdiffsvn.sh colors.bash)
+lnfiles=(.bashrc .aliases .clang-format .functions .env_vars .gvimrc .profile vimdiff.sh vimdiffsvn.sh colors.bash)
 # .vim/.vimrc are cross-platform, but the Windows-tuned copies (formerly winhome) are still a
 # separate, unreconciled fork of the Mac/Linux ones -- see winhome-import/. Until that content
 # merge happens, keep the two sets of files apart entirely rather than picking one arbitrarily.
