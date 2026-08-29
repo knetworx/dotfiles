@@ -1,20 +1,34 @@
-# Mac Home
+# dotfiles
 
-Storage of files for Mac home directory, previously synced between computers using Dropbox.
+Personal dotfiles/config repo. Pull this down on a new machine, run `install.sh`, and get an
+environment set up the way I like it.
 
-Using Dropbox, the files on each of my Macs were symlinked to these files, so whenever I changed, for example, my .bash_aliases on one computer, it would be updated on the other.
+Formerly two separate repos: `machome` (Mac + SSH-target Linux, dating back to when I worked
+primarily on a Macbook) and `winhome` (created later, once I switched to a Windows-primary
+setup). They're merged into this one repo now, with `install.sh` branching on platform instead
+of maintaining two parallel setups.
 
-This also made it easy to maintain Vim syntax files and quickly load necessary settings whenever I moved to a new machine.
+## Setup
 
-## Setup:
+```
+./install.sh
+```
 
-If install.sh cannot be run, use "chmod +x install.sh"
+On native Windows (Git Bash/MSYS/Cygwin), this needs to be run from an **elevated** terminal
+(right-click Git Bash, "Run as administrator"). Windows can't create unprivileged file
+symlinks -- only unprivileged junctions, which are directory-only -- so the script checks for
+admin rights up front and refuses to run without them, rather than silently falling back to
+plain copies (which is what happened for years before this was fixed, and is why this repo and
+the live files in `~/` drifted out of sync without anyone noticing).
 
-Then just run "./install.sh"
+Personal identity (git name/email, etc.) is never committed directly -- see `*.example` files,
+which get copied (not linked) to their real name so you can fill in personal details locally
+without them touching the repo.
 
-In iTerm2, in the Preferences->General tab, tell it to load settings from your $MACHOME folder
+## Known TODO
 
-## Notes
-
-Over time, I've been trying to make this more generalized, as I also use it to get up and running on Linux machines as well.
-At some point I should formalize this, update the name of the repo, ensure all commands work properly across different types of machines, etc.
+- `winhome-import/.vim` and `winhome-import/.vimrc` are the old winhome vim config, merged in
+  with full history but not yet reconciled with this repo's own long-standing `.vim`/`.vimrc`.
+  `install.sh` links the winhome-import copies on native Windows and the top-level ones
+  everywhere else, as a stopgap. Actually merging the content into one set of files (or
+  deliberately keeping a documented platform-specific split) is still pending.
