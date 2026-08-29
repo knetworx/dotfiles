@@ -24,11 +24,9 @@ Chrome
 - Login to Gmail account
 
 Vim
-- Get .vimrc (and any other files necessary for config)
-  - Put them all in your Windows home folder (e.g. C:\Users\nick.heilmann)
-  - Rather than copying, make a hard link/junction to files/folders using command prompt as administrator
-    - mklink /H .vimrc winhome\.vimrc
-    - mklink /J .vim winhome\.vim
+- Run install.sh from an elevated (Run as administrator) Git Bash. Links .vim (junction) and
+  .vimrc (real symlink, not a hardlink -- hardlinks detach the next time git pull rewrites the
+  file) into your Windows home folder.
 - Make sure Mac-only and Unix-only commands aren't used
 - Check for autocmd/au lines that cause repetitive re-processing
 

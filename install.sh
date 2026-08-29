@@ -5,8 +5,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   SOURCE="$(readlink "$SOURCE")"
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
-# MACHOME is the directory in which this script exists
-MACHOME="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+# DOTFILES is the directory in which this script exists
+DOTFILES="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 case "$(uname -s)" in
 	MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;;
@@ -25,9 +25,10 @@ if [[ $IS_WINDOWS == 1 ]]; then
 	fi
 fi
 
-# .vim and .vimrc are cross-platform, but on native Windows winhome's install.sh owns them
-# instead (its copies are the Windows-tuned versions). Everywhere else, machome owns them.
 lnfiles=(.bashrc .aliases .functions .env_vars .gvimrc .profile vimdiff.sh vimdiffsvn.sh colors.bash)
+# .vim/.vimrc are cross-platform, but the Windows-tuned copies (formerly winhome) are still a
+# separate, unreconciled fork of the Mac/Linux ones -- see winhome-import/. Until that content
+# merge happens, keep the two sets of files apart entirely rather than picking one arbitrarily.
 if [[ $IS_WINDOWS == 0 ]]; then
 	lnfiles+=(.vim .vimrc)
 fi
@@ -57,11 +58,12 @@ function winpath {
 	fi
 }
 
+# $1 = name to create in $PWD, $2 = source path to link it to
 function makelink {
 	local file="$1"
-	local target="$MACHOME/$file"
+	local target="$2"
 	if [[ $IS_WINDOWS == 1 ]]; then
-		# MSYS_NO_PATHCONV keeps Git Bash from mangling the /J, /H, etc. switches before cmd sees them
+		# MSYS_NO_PATHCONV keeps Git Bash from mangling the /J switch before cmd sees it
 		local wtarget="$(winpath "$target")"
 		local wlink="$(winpath "$PWD/$file")"
 		if [ -d "$target" ]; then
@@ -75,25 +77,34 @@ function makelink {
 }
 
 pushd ~
-echo "Creating links from machome directory"
+echo "Creating links from dotfiles directory"
 for file in ${lnfiles[@]}; do
 	cleanfile $file
-	echo "link: ${MACHOME##*/}/$file => $file"
-	makelink "$file"
+	echo "link: ${DOTFILES##*/}/$file => $file"
+	makelink "$file" "$DOTFILES/$file"
 done
-echo "Copying files from machome directory"
+if [[ $IS_WINDOWS == 1 ]]; then
+	# TEMPORARY: .vim/.vimrc content merge (old machome vs. old winhome) is still pending, so
+	# these are linked from their as-imported holding location instead of their final one.
+	for file in .vim .vimrc; do
+		cleanfile $file
+		echo "link: ${DOTFILES##*/}/winhome-import/$file => $file (TEMPORARY location, pending vimrc merge)"
+		makelink "$file" "$DOTFILES/winhome-import/$file"
+	done
+fi
+echo "Copying files from dotfiles directory"
 for file in ${cpfiles[@]}; do
 	newfile="${file%.*}"
 	cleanfile $newfile
-	echo "cp: ${MACHOME##*/}/$file => $newfile"
-	cp "$MACHOME/$file" "$newfile"
+	echo "cp: ${DOTFILES##*/}/$file => $newfile"
+	cp "$DOTFILES/$file" "$newfile"
 done
 popd
 #TODO: Can the update --init be used without arguments? Need to try this on an uninitialized box to see if it works...
 # Further reading: http://vimcasts.org/episodes/synchronizing-plugins-with-git-submodules-and-pathogen/
 # Update all to latest using:
 # git submodule foreach git pull origin master
-pushd $MACHOME
+pushd $DOTFILES
 echo "Updating/initing vim submodules"
 git submodule update --init
 popd
