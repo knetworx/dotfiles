@@ -8,7 +8,30 @@ done
 # MACHOME is the directory in which this script exists
 MACHOME="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-lnfiles=(.bashrc .aliases .functions .env_vars .gvimrc .ideavimrc .profile .zprofile .vim .vimrc vimdiff.sh vimdiffsvn.sh mm.cfg .zshrc .oh-my-zsh .omzcustom colors.bash)
+case "$(uname -s)" in
+	MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;;
+	*) IS_WINDOWS=0 ;;
+esac
+
+# Native Windows can't make unprivileged file symlinks (only unprivileged junctions, which are
+# dir-only). Since install.sh is a rarely-rerun, one-time-per-machine setup step, we require
+# elevation up front rather than silently falling back to copies, which is what caused this
+# repo to drift from ~/ for years without anyone noticing.
+if [[ $IS_WINDOWS == 1 ]]; then
+	if ! net session >/dev/null 2>&1; then
+		echo "install.sh needs to create real file symlinks, which requires admin rights on Windows."
+		echo "Right-click your terminal (Git Bash) and choose 'Run as administrator', then re-run install.sh."
+		exit 1
+	fi
+fi
+
+# .vim and .vimrc are cross-platform, but on native Windows winhome's install.sh owns them
+# instead (its copies are the Windows-tuned versions). Everywhere else, machome owns them.
+lnfiles=(.bashrc .aliases .functions .env_vars .gvimrc .profile vimdiff.sh vimdiffsvn.sh colors.bash)
+if [[ $IS_WINDOWS == 0 ]]; then
+	lnfiles+=(.vim .vimrc)
+fi
+
 shopt -s nullglob
 cpfiles=(.*.example)
 
@@ -24,12 +47,39 @@ function cleanfile {
 	fi
 }
 
+function winpath {
+	if command -v cygpath >/dev/null 2>&1; then
+		cygpath -w "$1"
+	else
+		local p="$1"
+		p="$(printf '%s' "$p" | sed -E 's#^/([a-zA-Z])/#\1:/#')"
+		printf '%s' "${p//\//\\}"
+	fi
+}
+
+function makelink {
+	local file="$1"
+	local target="$MACHOME/$file"
+	if [[ $IS_WINDOWS == 1 ]]; then
+		# MSYS_NO_PATHCONV keeps Git Bash from mangling the /J, /H, etc. switches before cmd sees them
+		local wtarget="$(winpath "$target")"
+		local wlink="$(winpath "$PWD/$file")"
+		if [ -d "$target" ]; then
+			MSYS_NO_PATHCONV=1 cmd /c mklink /J "$wlink" "$wtarget" >/dev/null
+		else
+			MSYS_NO_PATHCONV=1 cmd /c mklink "$wlink" "$wtarget" >/dev/null
+		fi
+	else
+		ln -sf "$target" "$file"
+	fi
+}
+
 pushd ~
-echo "Creating symlinks from machome directory"
+echo "Creating links from machome directory"
 for file in ${lnfiles[@]}; do
 	cleanfile $file
-	echo "ln: ${MACHOME##*/}/$file => $file"
-	ln -sf "$MACHOME/$file" "$file"
+	echo "link: ${MACHOME##*/}/$file => $file"
+	makelink "$file"
 done
 echo "Copying files from machome directory"
 for file in ${cpfiles[@]}; do
@@ -47,4 +97,3 @@ pushd $MACHOME
 echo "Updating/initing vim submodules"
 git submodule update --init
 popd
-
