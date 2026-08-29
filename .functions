@@ -12,8 +12,7 @@ function printscriptlocation() {
 	if [[ $BASH_ARGV ]]; then
 		safeecho "Sourcing: $BASH_ARGV"
 	else
-		# This doesn't work properly in zsh, it prints the location of the function, not the call
-		safeecho "Sourcing: ${(%):-%x}"
+		safeecho "Sourcing: ${BASH_SOURCE[0]}"
 	fi
 }
 

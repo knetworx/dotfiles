@@ -29,7 +29,7 @@ if [[ $ENV_TYPE != 'mac' ]]; then
 
 	# On Mac, dotfiles are sorted first, but on linux they're sorted inline
 	# This forces dotfiles to be sorted first
-	export lC_ALL="C"
+	export LC_ALL="C"
 fi
 
 if [[ $ENV_TYPE == 'linux' ]]; then

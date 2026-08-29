@@ -11,7 +11,7 @@ function safeecho() {
 if [[ $BASH_ARGV ]]; then
 	safeecho "Sourcing: $BASH_ARGV"
 else
-	safeecho "Sourcing: ${(%):-%x}"
+	safeecho "Sourcing: ${BASH_SOURCE[0]}"
 fi
 
 # If not running interactively, don't do anything
