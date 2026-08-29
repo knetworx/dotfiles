@@ -24,9 +24,6 @@ let g:clang_complete_copen = 1 " Whether to open quickfix window on error
 
 filetype plugin indent on
 
-" Vaxe Options
-let g:vaxe_skip_hxml = 1
-
 if g:vimrcdebug | echom "Running vimrc" | endif
 
 " See ':help has()'
