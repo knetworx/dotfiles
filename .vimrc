@@ -1,3 +1,6 @@
+set runtimepath^=$HOME/.vim
+set runtimepath+=$HOME/.vim/after
+
 let g:vimrcdebug=0
 
 let g:mac=0
@@ -18,12 +21,6 @@ let g:clang_user_options = '2>/dev/null || exit 0'
 "let g:clang_use_library = 1
 let g:clang_complete_auto = 0 " Whether to start completion on ->, ., ::
 let g:clang_complete_copen = 1 " Whether to open quickfix window on error
-
-" CtrlP Options
-"let g:ctrlp_map = '<c-p>'
-"let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_by_filename = 1
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:100'
 
 filetype plugin indent on
 
@@ -46,6 +43,7 @@ if has('macunix')
 	let g:mac=1
 endif
 
+" This will be true for Git Bash terminals in Windows
 if has('win32unix')
 	if g:vimrcdebug | echom "cygwin" | endif
 	let g:cygwin=1
@@ -63,13 +61,14 @@ set winaltkeys=no
 filetype on
 filetype plugin on
 
+if g:vimrcdebug | echom "NightDaySwap" | endif
+
 " Always start with my own colorscheme
-set runtimepath+=~/.vim
 colorscheme nick
 " However, my dark theme is tough to see while riding in the car in the sun,
 " so let's have a hotkey for switching to something with a light background
 function! NightDaySwap()
-	if g:colors_name == "nick"
+	if g:colors_name && g:colors_name == "nick"
 		colorscheme morning
 		hi SpecialKey guifg=#999999
 		hi Comment guifg=#999999
@@ -98,6 +97,73 @@ if has('mouse_sgr')
     set ttymouse=sgr
 endif
 
+if g:vimrcdebug | echom "Save/Load Win Size/Position" | endif
+
+"------------------------------------
+" Saving/Loading window size/position
+"------------------------------------
+
+if has("gui_running")
+  function! ScreenFilename()
+    if has('amiga')
+      return "s:.vimsize"
+    elseif has('win32')
+      return $HOME.'\_vimsize'
+    else
+      return $HOME.'/.vimsize'
+    endif
+  endfunction
+
+  function! ScreenRestore()
+    " Restore window size (columns and lines) and position
+    " from values stored in vimsize file.
+    " Must set font first so columns and lines are based on font size.
+    let f = ScreenFilename()
+    if has("gui_running") && g:screen_size_restore_pos && filereadable(f)
+      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+      for line in readfile(f)
+        let sizepos = split(line)
+        if len(sizepos) == 5 && sizepos[0] == vim_instance
+          silent! execute "set columns=".sizepos[1]." lines=".sizepos[2]
+          silent! execute "winpos ".sizepos[3]." ".sizepos[4]
+          wincmd =
+          return
+        endif
+      endfor
+    endif
+  endfunction
+
+  function! ScreenSave()
+    " Save window size and position.
+    if has("gui_running") && g:screen_size_restore_pos
+      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+      let data = vim_instance . ' ' . &columns . ' ' . &lines . ' ' .
+            \ (getwinposx()<0?0:getwinposx()) . ' ' .
+            \ (getwinposy()<0?0:getwinposy())
+      let f = ScreenFilename()
+      if filereadable(f)
+        let lines = readfile(f)
+        call filter(lines, "v:val !~ '^" . vim_instance . "\\>'")
+        call add(lines, data)
+      else
+        let lines = [data]
+      endif
+      call writefile(lines, f)
+    endif
+  endfunction
+
+  if !exists('g:screen_size_restore_pos')
+    let g:screen_size_restore_pos = 1
+  endif
+  if !exists('g:screen_size_by_vim_instance')
+    let g:screen_size_by_vim_instance = 1
+  endif
+  autocmd VimEnter * if g:screen_size_restore_pos == 1 | call ScreenRestore() | endif
+  autocmd VimLeavePre * if g:screen_size_restore_pos == 1 | call ScreenSave() | endif
+endif
+
+if g:vimrcdebug | echom "Group 1" | endif
+
 set autoindent
 set autoread
 set backspace=indent,eol,start
@@ -106,6 +172,8 @@ set clipboard=unnamed
 if &diff
 	set scrollbind
 	set cursorbind
+	" Keep diff windows same size when resizing whole window
+	autocmd vimResized * wincmd =
 	"set lines=999
 else
 	if has('gui')
@@ -116,7 +184,7 @@ set complete=.,w,b,u,k,s,i,d,]
 set completeopt=menu,menuone,longest
 set copyindent
 set preserveindent
-set diffopt=filler,vertical,context:10,foldcolumn:0,iwhite
+set diffopt=filler,vertical,context:20,foldcolumn:0,iwhite
 set display=lastline
 set gdefault
 set foldmethod=expr
@@ -124,10 +192,25 @@ set nofoldenable
 set nu
 set guicursor=n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
 if g:mac || g:macvim
-	set guifont=Monaco:h10
+	"set guifont=Monaco:h10
+	let s:font_name = 'Monaco'
+	let s:font_size = 10
 else
-	set guifont=Lucida_Console:h9
+	"set guifont=JetBrains_Mono:h7
+	"set guifont=Consolas:h9
+	"set guifont=Cousine:h9
+	"set guifont=Ubuntu_Mono:h10
+	"set guifont=Lucida_Console:h9
+	let s:font_name = 'Ubuntu_Mono'
+	let s:font_size = 9
 endif
+let &guifont=s:font_name.':h'.s:font_size
+function! AdjustFontSize(delta)
+	let s:font_size = max([6, s:font_size + a:delta])
+	let &guifont=s:font_name.':h'.s:font_size
+endfunction
+nnoremap <C-ScrollWheelUp> :call AdjustFontSize(1)<CR>
+nnoremap <C-ScrollWheelDown> :call AdjustFontSize(-1)<CR>
 set guioptions=eihmtbrlaAc
 set history=2000
 set ignorecase
@@ -158,13 +241,16 @@ set tabstop=4
 set scrollopt=ver,hor,jump
 set showcmd
 set smartindent
-au Bufread,BufNewFile * set ts=4 sts=4 sw=4 tw=0 noet
+if g:vimrcdebug | echom "Group 2" | endif
+au BufNewFile,BufRead * set ts=4 sts=4 sw=4 tw=0 noet
+au BufNewFile,BufRead *.cpp.template,*.h.template set filetype=cpp
 "au BufNewFile,BufRead *.txt,*.doc,*.rtf set spell
 "au Bufread,BufNewFile *.as set filetype=actionscript
 "au Bufread,BufNewFile *.template set filetype=jinja
 "augroup filetype
-"	au! BufRead,BufNewFile *.proto setfiletype proto
+	"au! BufRead,BufNewFile *.proto setfiletype proto
 "augroup end
+if g:vimrcdebug | echom "Group 3" | endif
 "set spellsuggest=fast
 set nospell
 set splitright
@@ -183,6 +269,8 @@ set wildmenu
 set wildignore=.DS_Store
 set wildignore+=_cache,*.abc,*.as3proj,*.bmp,*.class,*.csv,*.cxx,*.d,*.dat,*.data,*.db,*.diff,*.dio,*.dmg,*.dylib,*.exe,*.fla,*.flv,*.git,*.gitignore,*.gz,*.hg,*.idea,*.iml,*.jar,*.jpeg,*.jpg,*.LinkFileList,*.mp4,*.mpg,*.o,*.otf,*.out,*.pb.*,*.pbxproj,*.pc,*.png,*.properties,*.props,*.pyc,*.sspj,*.stamp,*.svn-base,*.swc,*.swf,*.tar.gz,*.tgz,*.ttf,*.wav,*.xconfig,*.xfl,**/.svn/**,**/.git/**
 "set wildignore+=*.i
+
+if g:vimrcdebug | echom "Group 4" | endif
 
 function! SwitchSourceHeader()
 	if (expand ("%:e") == "cpp" || expand ("%:e") == "c")
@@ -225,12 +313,19 @@ endfunction
 " For a list of autocmd triggers, see:
 "http://vimdoc.sourceforge.net/htmldoc/autocmd.html
 
+if g:vimrcdebug | echom "Group 5" | endif
+
 " Change working directory to current
 autocmd BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
 
 autocmd FileType python set tabstop=4 | set softtabstop=4 | set shiftwidth=4 | set expandtab
 
+" When opening a diff, make sure scrollbind is set immediately
+autocmd VimEnter * if &diff | execute 'windo set scrollbind' | endif
+
 "au FocusGained,BufEnter * :silent! !
+
+if g:vimrcdebug | echom "Group 6" | endif
 
 """""""""""""""""""""""""
 " If we're dealing with a very large file, cut back on its processing
@@ -281,6 +376,8 @@ cnoremap s-tab <C-C><C-W><S-W>
 "noremap <S-F4> :split %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 "noremap <M-F4> :vsplit %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 
+if g:vimrcdebug | echom "Group 7" | endif
+
 noremap <F4> :call SwitchSourceHeader()<CR>
 noremap <S-F4> :call SwitchSourceHeader()<CR>
 
@@ -288,19 +385,7 @@ if &diff
 	noremap <F5> :diffupdate<CR>
 else
 	noremap <S-F5> :source $MYVIMRC<CR><CR>
-	noremap <F5> :CtrlP<CR>
-	noremap <M-P> :CtrlP<CR>
-	noremap <M-p> :CtrlP<CR>
-	noremap <D-P> :CtrlP<CR>
-	noremap <D-p> :CtrlP<CR>
-	noremap <Space><Space> :CtrlP<CR>
-	"noremap <S-F5> :CommandTFlush<CR>
 endif
-
-"noremap <C-E> :CommandT<CR>
-"noremap <S-E> :CommandT<CR>
-noremap <C-E> :CtrlP<CR>
-noremap <S-E> :CtrlP<CR>
 
 " CTRL-F4 is Close window
 "noremap <C-F4> <C-W>c
@@ -332,6 +417,9 @@ inoremap <C-Space> <C-P>
 noremap <F2> <C-O>
 inoremap <F2> <C-O><C-O>
 cnoremap <F2> <C-C><C-O>
+noremap <M-O> <C-O>
+inoremap <M-O> <C-O><C-O>
+cnoremap <M-O> <C-C><C-O>
 noremap <S-F2> <C-I>
 inoremap <S-F2> <C-O><C-I>
 cnoremap <S-F2> <C-C><C-I>
@@ -390,7 +478,7 @@ noremap OB j
 noremap OC l
 noremap OD h
 
-" Alt-Arrow to switch between splits
+" Shift-Arrow to switch between splits
 noremap <S-Up> <C-W><Up><C-W>_
 noremap <S-Down> <C-W><Down><C-W>_
 noremap <S-Left> <C-W><Left><C-W>_
@@ -400,13 +488,47 @@ inoremap <S-Down> <ESC><C-W><Down><C-W>_
 inoremap <S-Left> <ESC><C-W><Left><C-W>_
 inoremap <S-Right> <ESC><C-W><Right><C-W>_
 
+" Ctrl-H and Ctrl-L (map these to side scrollwheel) to scroll the screen left and right
+noremap <C-L> 20zh
+noremap <C-H> 20zl
+
+if g:windows
+	" Allow Alt+Space to open the window menu (e.g. for things like Alt+Space M to move the window when it's offscreen)
+	nnoremap <M-Space> :simalt ~<CR>
+endif
+
 " Custom settings for any given computer (i.e. my old Macbook has a lower
 " resolution screen, so I use a smaller font to fit more text
 if filereadable($HOME . "/.vimrclocal")
 	source $HOME/.vimrclocal
 endif
 
-" Special mappings specifically for work
-"if filereadable($HOME . "/.vimrckix")
-"	source $HOME/.vimrckix
-"endif
+if g:vimrcdebug | echom "Is it an Unreal file?" | endif
+
+function! s:IsUnrealFile()
+    let l:dir = expand('%:p:h')
+    while l:dir != fnamemodify(l:dir, ':h')
+        if !empty(glob(l:dir . '/*.uproject'))
+            return 1
+        endif
+        let l:dir = fnamemodify(l:dir, ':h')
+    endwhile
+    return 0
+endfunction
+
+autocmd FileType cpp,c call s:MaybeLoadUnreal()
+function! s:MaybeLoadUnreal()
+    if s:IsUnrealFile()
+        source ~/.vim/syntax/unreal.vim
+    endif
+endfunction
+
+" Add block cursor to vim specifically for cygwin
+if g:cygwin
+	let &t_ti.="\e[1 q"
+	let &t_SI.="\e[5 q"
+	let &t_EI.="\e[1 q"
+	let &t_te.="\e[0 q"
+endif
+
+if g:vimrcdebug | echom "FIN!" | endif

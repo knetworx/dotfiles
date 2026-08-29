@@ -29,7 +29,7 @@ hi Label					guifg=yellow											ctermfg=226
 "hi LineComment				guifg=#777777
 hi LineNr					guifg=#555555		ctermfg=240
 hi MatchParen				guifg=white			guibg=#000000						ctermfg=231		ctermbg=16
-hi Normal					guifg=#doce7c		guibg=#1e1e1e						ctermfg=186		ctermbg=234			
+hi Normal					guifg=#d0ce7c		guibg=#1e1e1e						ctermfg=186		ctermbg=234
 hi Number					guifg=#86aa90											ctermfg=108
 hi PreProc					guifg=#00ff00											ctermfg=46
 hi Operator					guifg=#559fd1											ctermfg=74

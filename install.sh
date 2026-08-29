@@ -25,13 +25,7 @@ if [[ $IS_WINDOWS == 1 ]]; then
 	fi
 fi
 
-lnfiles=(.bashrc .aliases .clang-format .functions .env_vars .gvimrc .profile vimdiff.sh vimdiffsvn.sh colors.bash)
-# .vim/.vimrc are cross-platform, but the Windows-tuned copies (formerly winhome) are still a
-# separate, unreconciled fork of the Mac/Linux ones -- see winhome-import/. Until that content
-# merge happens, keep the two sets of files apart entirely rather than picking one arbitrarily.
-if [[ $IS_WINDOWS == 0 ]]; then
-	lnfiles+=(.vim .vimrc)
-fi
+lnfiles=(.bashrc .aliases .clang-format .functions .env_vars .gvimrc .profile .vim .vimrc vimdiff.sh vimdiffsvn.sh colors.bash)
 
 shopt -s nullglob
 cpfiles=(.*.example)
@@ -83,15 +77,6 @@ for file in ${lnfiles[@]}; do
 	echo "link: ${DOTFILES##*/}/$file => $file"
 	makelink "$file" "$DOTFILES/$file"
 done
-if [[ $IS_WINDOWS == 1 ]]; then
-	# TEMPORARY: .vim/.vimrc content merge (old machome vs. old winhome) is still pending, so
-	# these are linked from their as-imported holding location instead of their final one.
-	for file in .vim .vimrc; do
-		cleanfile $file
-		echo "link: ${DOTFILES##*/}/winhome-import/$file => $file (TEMPORARY location, pending vimrc merge)"
-		makelink "$file" "$DOTFILES/winhome-import/$file"
-	done
-fi
 echo "Copying files from dotfiles directory"
 for file in ${cpfiles[@]}; do
 	newfile="${file%.*}"
@@ -99,12 +84,4 @@ for file in ${cpfiles[@]}; do
 	echo "cp: ${DOTFILES##*/}/$file => $newfile"
 	cp "$DOTFILES/$file" "$newfile"
 done
-popd
-#TODO: Can the update --init be used without arguments? Need to try this on an uninitialized box to see if it works...
-# Further reading: http://vimcasts.org/episodes/synchronizing-plugins-with-git-submodules-and-pathogen/
-# Update all to latest using:
-# git submodule foreach git pull origin master
-pushd $DOTFILES
-echo "Updating/initing vim submodules"
-git submodule update --init
 popd

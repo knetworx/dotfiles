@@ -25,10 +25,7 @@ Personal identity (git name/email, etc.) is never committed directly -- see `*.e
 which get copied (not linked) to their real name so you can fill in personal details locally
 without them touching the repo.
 
-## Known TODO
-
-- `winhome-import/.vim` and `winhome-import/.vimrc` are the old winhome vim config, merged in
-  with full history but not yet reconciled with this repo's own long-standing `.vim`/`.vimrc`.
-  `install.sh` links the winhome-import copies on native Windows and the top-level ones
-  everywhere else, as a stopgap. Actually merging the content into one set of files (or
-  deliberately keeping a documented platform-specific split) is still pending.
+`.vim`/`.vimrc` are a single cross-platform config now (previously forked between machome and
+winhome) -- winhome's `.vim` tree won out as the base (it had the actively-maintained Unreal
+Engine syntax support and colorscheme updates machome's had fallen behind on), with `.vimrc`
+taken from the most current live version. CtrlP was dropped in the process (unused).
