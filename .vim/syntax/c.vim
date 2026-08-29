@@ -2,6 +2,7 @@
 " Language:	C
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 " Last Change:	2004 Feb 04
+" Updated:	2025 — C11 keywords, binary literals
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -120,6 +121,11 @@ if !exists("c_no_c99")
   syn match	cFloat		display contained "0x\x\+\.\=p[-+]\=\d\+[fl]\=\>"
 endif
 
+" C11/C++14: binary integer literals (0b0101 / 0B0101)
+if !exists("c_no_c11")
+  syn match	cNumber		display contained "0[bB][01]\+\(u\=l\{0,2}\|ll\=u\)\>"
+endif
+
 " flag an octal number with wrong digits
 syn match	cOctalError	display contained "0\o*[89]\d*"
 syn case match
@@ -177,8 +183,17 @@ if exists("c_gnu")
   syn keyword	cType		__label__ __complex__ __volatile__
 endif
 
+" ============================================================
+" C11 keywords (ISO C11 / <stdalign.h> / <stdnoreturn.h>)
+" ============================================================
+if !exists("c_no_c11")
+  syn keyword	cType		_Atomic _Alignas _Alignof alignas alignof
+  syn keyword	cStatement	_Generic _Static_assert static_assert
+  syn keyword	cStorageClass	_Thread_local thread_local _Noreturn noreturn
+endif
+
 syn keyword	cStructure	struct union enum typedef
-syn keyword	cStorageClass	static register auto volatile extern const
+syn keyword	cStorageClass	static register auto volatile extern const constexpr
 if exists("c_gnu")
   syn keyword	cStorageClass	inline __attribute__
 endif
