@@ -1,0 +1,46 @@
+Windows
+- File Explorer
+  - Show extensions
+  - Show hidden files
+  - Decrease space between items
+  - Display full path in title bar
+
+Git
+- Set global name and email
+
+Visual Studio
+- Install plugins
+  - UnrealVS
+  - VsVim
+  - P4EditVS
+- Import settings
+- Import VAX settings
+  - Default export location is %APPDATA%\VisualAssist
+  - Settings are in this repo in VisualStudioSettings folder
+- From the Engine Plugins folder, clone the Visual Studio Tools extension
+  - https://github.com/microsoft/vc-ue-extensions#unreal-engine-plugin-for-visual-studio
+
+Chrome
+- Login to Gmail account
+
+Vim
+- Get .vimrc (and any other files necessary for config)
+  - Put them all in your Windows home folder (e.g. C:\Users\nick.heilmann)
+  - Rather than copying, make a hard link/junction to files/folders using command prompt as administrator
+    - mklink /H .vimrc winhome\.vimrc
+    - mklink /J .vim winhome\.vim
+- Make sure Mac-only and Unix-only commands aren't used
+- Check for autocmd/au lines that cause repetitive re-processing
+
+Chrome
+- Login using GMail
+- Install native component for tab switcher
+- Disable key bindings for Global Speed extension
+
+OBS
+- Import/setup scene information
+
+P4V
+- Set font to small
+- Set double-click options
+- Set vim as diff tool, add -d flag

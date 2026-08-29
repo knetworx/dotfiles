@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>C:\Program Files\vim\vimfiles\syntax\cmm.vim.html</title>
+<meta name="Generator" content="Vim/7.0"/>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+<style type="text/css">
+<!--
+.Special { color: #ff0000; text-decoration: underline; }
+.Identifier { color: #0000ff; font-weight: bold; }
+.String { color: #ff00ff; }
+.Type { color: #ff0000; }
+.PreProc { color: #00ff00; }
+.Statement { color: #ffff00; font-weight: bold; }
+pre { color: #ffffff; background-color: #000000; }
+body { color: #ffffff; background-color: #000000; }
+.Comment { color: #808080; }
+-->
+</style>
+</head>
+<body>
+<p>
+<pre>
+<span class="Comment">&quot; Vim syntax file:</span>
+<span class="Comment">&quot;</span> <span class="PreProc">Language:</span><span class="Comment">     cmm</span>
+<span class="Comment">&quot;</span> <span class="PreProc">Maintainer:</span><span class="Comment">   Nick Heilmann</span>
+<span class="Comment">&quot;</span> <span class="PreProc">Last Change:</span><span class="Comment">  Tuesday, June 27, 2006</span>
+
+<span class="Statement">if</span> <span class="Identifier">exists</span><span class="Statement">(</span><span class="String">&quot;b:current_syntax&quot;</span><span class="Statement">)</span>
+  <span class="Statement">finish</span>
+<span class="Statement">endif</span>
+
+<span class="Statement">syn</span> <span class="Type">case</span><span class=""> </span><span class="Type">ignore</span>
+
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmKeywords         append beep close cont continue decrypt do dodecrypt else encrypt
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmKeywords         encryptdo end enddo enter entry global gosub goto if inkey jumpto
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmKeywords         local on open pbreak pedit plist pmacro pstep read repeat rpt
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmKeywords         return run screen stop title wait while write
+
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         analyzer art asto autostore bm bookmark break cache csto clipstore
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         count cts data etm exception extension ext fdx fifo flag flash fpu
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         go group integrator java jtag la logger map mmu mode name onchip
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         pcp per perf pod port probe pulse pulse2 ref refresh register res
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         reset rt runtime selftest shadow sim snoop snooper spe sp spot
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         step sto store symbol y sy synch sys system target task term tpu ta
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         traddress tb trbus te trevent tp triggerprobe ti trin tm trmain to
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmCommands         tronchip v var vco vm vpu
+
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmIDEKeywords      abort area bitmapedit chdir cd clock cpos cmdpos cp compare copy del
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmIDEKeywords      dialog dir dump edit eval find history hist ifconfig iftest
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmIDEKeywords      intercom license log ls menu mkdir mv os pack patch path prt printer
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmIDEKeywords      pro profile pwd quit radix ren rm rmdir setup statusbar toolbar type
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmIDEKeywords      unpack unzip version window zero zip
+
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmDBoxKeywords     box button checkbox choosebox combobox defbutton defcombobox
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmDBoxKeywords     defedit defhotcombobox defhotedit defmedit dlistbox dyncombobox
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmDBoxKeywords     dyndefcombobox dyndefhotcombobox dynhotcombobox header help
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmDBoxKeywords     hotedit hotcombobox icon line listbox medit mlistbox pos posx posy
+<span class="Statement">syn</span> <span class="Type">keyword</span><span class=""> </span>cmmDBoxKeywords     pulldown space static text vline
+
+<span class="Statement">syn</span> <span class="Type">match</span><span class="">   </span>cmmNumber           <span class="String">&quot;</span><span class="String">[0-9]</span><span class="String">\+</span><span class="Special">\(</span><span class="String">.[0-9]*</span><span class="Special">\)</span><span class="String">\?&quot;</span><span class="vimSynMatchRegion"> </span><span class="Special">contains=</span>cmmOperator
+<span class="Statement">syn</span> <span class="Type">match</span><span class="">   </span>cmmNumber           <span class="String">&quot;0x</span><span class="String">[a-fA-F0-9]</span><span class="String">\+&quot;</span><span class="vimSynMatchRegion"> </span><span class="Special">contains=</span>cmmOperator
+
+<span class="Statement">syn</span> <span class="Type">match</span><span class="">   </span>cmmIdentifier       <span class="String">&quot;</span><span class="String">[a-zA-Z_][a-zA-Z_0-9]</span><span class="String">*&quot;</span>
+
+<span class="Statement">syn</span> <span class="Type">match</span><span class="">   </span>cmmOperator         <span class="String">&quot;?</span><span class="Special">\|</span><span class="String">!</span><span class="Special">\|</span><span class="String">=</span><span class="Special">\|</span><span class="String">+</span><span class="Special">\|</span><span class="String">-</span><span class="Special">\|</span><span class="String">%</span><span class="Special">\|</span><span class="String">:</span><span class="Special">\|</span><span class="String">,</span><span class="Special">\|</span><span class="String">\.</span><span class="Special">\|</span><span class="String">&lt;</span><span class="Special">\|</span><span class="String">&gt;</span><span class="Special">\|</span><span class="String">&amp;</span><span class="Special">\|</span><span class="String">(</span><span class="Special">\|</span><span class="String">)</span><span class="Special">\|</span><span class="String">{</span><span class="Special">\|</span><span class="String">}</span><span class="Special">\|</span><span class="String">\[</span><span class="Special">\|</span><span class="String">\]</span><span class="Special">\|</span><span class="String">\*</span><span class="Special">\|</span><span class="String">\~</span><span class="Special">\|</span><span class="String">\^</span><span class="Special">\|</span><span class="String">[|]</span><span class="Special">\|</span><span class="String">/&quot;</span>
+<span class="Statement">syn</span> <span class="Type">match</span><span class="">   </span>cmmOperator         <span class="String">&quot;/</span><span class="String">[a-zA-A]</span><span class="String">\+&quot;</span><span class="vimSynMatchRegion"> </span><span class="Special">contains=</span>cmmKeywords,cmmCommands,cmmIDEKeywords,cmmDBoxKeywords
+
+<span class="Statement">syn</span> <span class="Type">region</span><span class="">  </span>cmmString           <span class="Type">start</span><span class="vimSynRegion">=</span><span class="String">+L\=&quot;+</span><span class="vimSynRegion"> </span><span class="Type">skip</span><span class="vimSynRegion">=</span><span class="String">+</span><span class="String">\\\\</span><span class="Special">\|</span><span class="String">\\</span><span class="String">&quot;</span><span class="Special">\|</span><span class="String">\\</span><span class="String">$+</span><span class="vimSynRegion"> </span><span class="Special">excludenl</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">+&quot;+</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">'$'</span>
+<span class="Statement">syn</span> <span class="Type">region</span><span class="">  </span>cmmString           <span class="Type">start</span><span class="vimSynRegion">=</span><span class="String">+L\='+</span><span class="vimSynRegion"> </span><span class="Type">skip</span><span class="vimSynRegion">=</span><span class="String">+</span><span class="String">\\\\</span><span class="Special">\|</span><span class="String">\\</span><span class="String">'</span><span class="Special">\|</span><span class="String">\\</span><span class="String">$+</span><span class="vimSynRegion"> </span><span class="Special">excludenl</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">+'+</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">'$'</span>
+
+<span class="Statement">syn</span> <span class="Type">region</span><span class="">  </span>cmmComment          <span class="Type">start</span><span class="vimSynRegion">=</span><span class="String">&quot;//&quot;</span><span class="vimSynRegion"> </span><span class="Type">skip</span><span class="vimSynRegion">=</span><span class="String">&quot;</span><span class="String">\\</span><span class="String">$&quot;</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">&quot;$&quot;</span><span class="vimSynRegion"> </span><span class="Special">keepend</span>
+<span class="Statement">syn</span> <span class="Type">region</span><span class="">  </span>cmmComment          <span class="Type">start</span><span class="vimSynRegion">=</span><span class="String">&quot;;&quot;</span><span class="vimSynRegion"> </span><span class="Type">skip</span><span class="vimSynRegion">=</span><span class="String">&quot;</span><span class="String">\\</span><span class="String">$&quot;</span><span class="vimSynRegion"> </span><span class="Type">end</span><span class="vimSynRegion">=</span><span class="String">&quot;$&quot;</span><span class="vimSynRegion"> </span><span class="Special">keepend</span>
+
+<span class="Statement">hi</span> cmmCommands                  <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>yellow<span class="vimHiKeyList">                    </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">yellow</span>
+<span class="Statement">hi</span> cmmComment                   <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>green<span class="vimHiKeyList">    </span><span class="Type">cterm</span><span class="vimHiKeyList">=</span><span class="PreProc">italic</span><span class="vimHiKeyList">     </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">green</span><span class="vimHiKeyList">    </span><span class="Type">gui</span><span class="vimHiKeyList">=</span><span class="PreProc">italic</span>
+<span class="Statement">hi</span> cmmDBoxKeywords              <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>yellow<span class="vimHiKeyList">   </span><span class="Type">cterm</span><span class="vimHiKeyList">=</span><span class="PreProc">underline</span><span class="vimHiKeyList">  </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">yellow</span><span class="vimHiKeyList">   </span><span class="Type">gui</span><span class="vimHiKeyList">=</span><span class="PreProc">underline</span>
+<span class="Statement">hi</span> cmmIDEKeywords               <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>blue<span class="vimHiKeyList">     </span><span class="Type">cterm</span><span class="vimHiKeyList">=</span><span class="PreProc">underline</span><span class="vimHiKeyList">  </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">blue</span><span class="vimHiKeyList">     </span><span class="Type">gui</span><span class="vimHiKeyList">=</span><span class="PreProc">underline</span>
+<span class="Statement">hi</span> cmmIdentifier                <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>white<span class="vimHiKeyList">                     </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">white</span>
+<span class="Statement">hi</span> cmmKeywords                  <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>blue<span class="vimHiKeyList">                      </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">blue</span>
+<span class="Statement">hi</span> cmmNumber                    <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>magenta<span class="vimHiKeyList">                   </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">magenta</span>
+<span class="Statement">hi</span> cmmOperator                  <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>cyan<span class="vimHiKeyList">                      </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">cyan</span>
+<span class="Statement">hi</span> cmmString                    <span class="Type">ctermfg</span><span class="vimHiKeyList">=</span>red<span class="vimHiKeyList">      </span><span class="Type">cterm</span><span class="vimHiKeyList">=</span><span class="PreProc">italic</span><span class="vimHiKeyList">     </span><span class="Type">guifg</span><span class="vimHiKeyList">=</span><span class="vimGroupName">red</span><span class="vimHiKeyList">      </span><span class="Type">gui</span><span class="vimHiKeyList">=</span><span class="PreProc">italic</span>
+
+<span class="Statement">let</span> b:current_syntax<span class=""> </span><span class="Statement">=</span><span class=""> </span><span class="String">&quot;cmm&quot;</span>
+</pre>
+</p>
+</body>
+</html>

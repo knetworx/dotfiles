@@ -1,0 +1,28 @@
+Visual Studio
+- Visual Assist X
+- VisVim
+- UnrealVS
+  - Widen standard bar
+- P4EditVS
+Bitwarden
+Chrome
+Discord
+Dropbox?
+Epic Games Launcher
+Git
+Groupy
+KeePass
+Keyframe MP
+nVidia driver from S:
+OBS
+P4V
+Paint.NET
+Parsec
+Photos (Microsoft - App Store)
+PowerToys (Microsoft)
+ScreenToGif
+Slack
+Springboard
+UGS
+Vim
+Visual Studio Code

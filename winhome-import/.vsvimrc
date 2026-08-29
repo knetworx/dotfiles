@@ -1,0 +1,39 @@
+"map <ESC> <ESC>:noh<CR>
+noremap <ESC> :noh<CR><ESC>
+nnoremap <Esc><Esc> :let @/ = ""<CR>
+set autoindent
+set smartindent
+set gdefault
+set history=2000
+set hlsearch
+set ignorecase
+set incsearch
+set keymodel=startsel
+set noexpandtab
+set nowrap
+set scrolloff=3
+set selection=inclusive
+set shiftwidth=4
+set showcmd
+set smartcase
+set softtabstop=4
+set tabstop=4
+set timeout
+set ttimeout
+set timeoutlen=0
+set ttimeoutlen=0
+"set clipboard=unnamed
+"Using the unnamed clipboard causes VsVim to freeze Visual Studio, but the following mappings purport to fix that (they don't)
+"noremap y "*y
+"noremap yy "*yy
+"noremap Y "*y$
+"noremap d "*d
+"noremap dd "*dd
+"noremap D "*D
+"noremap p "*p
+"noremap P "*P
+"" black hole register for x because chars do not need to go in any accessible register anyway
+"noremap x "_x
+" BUT THIS - THIS FINALLY GETS IT TO WORK THE WAY I WANT IT TO WITHOUT STALLING THE EDITOR: (Modified from something found at https://github.com/VsVim/VsVim/issues/3116#issuecomment-2377659591)
+vnoremap y :vsc edit.copy<CR>gv"0y
+noremap yy :vsc edit.copy<CR>"0yy
