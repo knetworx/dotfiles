@@ -25,7 +25,7 @@ if [[ $IS_WINDOWS == 1 ]]; then
 	fi
 fi
 
-lnfiles=(.bashrc .aliases .clang-format .functions .env_vars .gvimrc .profile .vim .vimrc vimdiff.sh vimdiffsvn.sh colors.bash)
+lnfiles=(.bashrc .aliases .clang-format .functions .env_vars .gvimrc .inputrc .profile .vim .vimrc vimdiff.sh vimdiffsvn.sh colors.bash)
 
 shopt -s nullglob
 cpfiles=(.*.example)
