@@ -36,9 +36,24 @@ if [[ $ENV_TYPE = 'mac' ]]; then
 	}
 
 	svndiff() {
-		svn diff "${@}" | colordiff 
+		svn diff "${@}" | colordiff
 	}
 fi
+
+# On mac, the real `say` binary is already on PATH and needs nothing here.
+# Git Bash on Windows has no equivalent, so shell out to a PowerShell one-liner instead.
+# Text travels via env var, not command-string interpolation, so quotes/special chars
+# in $* can't break out of the PowerShell command.
+case "$(uname -s)" in
+	MINGW*|MSYS*|CYGWIN*)
+		function say {
+			SAY_TEXT="$*" powershell.exe -NoProfile -NonInteractive -Command '
+				Add-Type -AssemblyName System.Speech
+				(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak($env:SAY_TEXT)
+			'
+		}
+		;;
+esac
 
 # Colorize text red
 # Arg 1: text to colorize
