@@ -84,4 +84,13 @@ for file in ${cpfiles[@]}; do
 	echo "cp: ${DOTFILES##*/}/$file => $newfile"
 	cp "$DOTFILES/$file" "$newfile"
 done
+
+# PowerShell's profile doesn't live directly under ~, so it's linked separately from lnfiles.
+if [[ $IS_WINDOWS == 1 ]]; then
+	psprofile="Documents/PowerShell/Microsoft.PowerShell_profile.ps1"
+	mkdir -p "$(dirname "$psprofile")"
+	cleanfile "$psprofile"
+	echo "link: ${DOTFILES##*/}/Microsoft.PowerShell_profile.ps1 => $psprofile"
+	makelink "$psprofile" "$DOTFILES/Microsoft.PowerShell_profile.ps1"
+fi
 popd
