@@ -51,6 +51,10 @@ if has('unix')
 	let g:unix=1
 endif
 
+" True for gvim, and for Neovim running under a GUI frontend like Neovide
+" (Neovim itself has no 'gui_running' concept since the GUI is a separate process)
+let g:gui_running = has('gui_running') || exists('g:neovide')
+
 set nocompatible
 
 set winaltkeys=no
@@ -81,7 +85,7 @@ noremap <F11> :call NightDaySwap()<CR>
 
 syntax on
 
-if !has("gui_running")
+if !g:gui_running
 	set t_Co=256
 else
 	set t_Co=512
@@ -100,7 +104,7 @@ if g:vimrcdebug | echom "Save/Load Win Size/Position" | endif
 " Saving/Loading window size/position
 "------------------------------------
 
-if has("gui_running")
+if g:gui_running
   function! ScreenFilename()
     if has('amiga')
       return "s:.vimsize"
@@ -116,8 +120,10 @@ if has("gui_running")
     " from values stored in vimsize file.
     " Must set font first so columns and lines are based on font size.
     let f = ScreenFilename()
-    if has("gui_running") && g:screen_size_restore_pos && filereadable(f)
-      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+    if g:gui_running && g:screen_size_restore_pos && filereadable(f)
+      " Neovim's v:servername is a random pipe name per launch (unlike gvim's
+      " stable 'GVIM'), so bucket all Neovide windows together instead.
+      let vim_instance = exists('g:neovide') ? 'NEOVIDE' : (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
       for line in readfile(f)
         let sizepos = split(line)
         if len(sizepos) == 5 && sizepos[0] == vim_instance
@@ -132,8 +138,8 @@ if has("gui_running")
 
   function! ScreenSave()
     " Save window size and position.
-    if has("gui_running") && g:screen_size_restore_pos
-      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+    if g:gui_running && g:screen_size_restore_pos
+      let vim_instance = exists('g:neovide') ? 'NEOVIDE' : (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
       let data = vim_instance . ' ' . &columns . ' ' . &lines . ' ' .
             \ (getwinposx()<0?0:getwinposx()) . ' ' .
             \ (getwinposy()<0?0:getwinposy())
@@ -164,7 +170,9 @@ if g:vimrcdebug | echom "Group 1" | endif
 set autoindent
 set autoread
 set backspace=indent,eol,start
-set browsedir=buffer
+if exists('+browsedir')
+	set browsedir=buffer
+endif
 set clipboard=unnamed
 if &diff
 	set scrollbind
@@ -208,7 +216,9 @@ function! AdjustFontSize(delta)
 endfunction
 nnoremap <C-ScrollWheelUp> :call AdjustFontSize(1)<CR>
 nnoremap <C-ScrollWheelDown> :call AdjustFontSize(-1)<CR>
-set guioptions=eihmtbrlaAc
+if exists('+guioptions')
+	set guioptions=eihmtbrlaAc
+endif
 set history=2000
 set ignorecase
 set smartcase
@@ -221,7 +231,9 @@ set listchars=tab:>-
 set list
 set nobackup
 set noswapfile
-set noremap
+if exists('+remap')
+	set noremap
+endif
 set foldopen=block,hor,mark,percent,quickfix,search,tag,undo
 set foldminlines=40
 set hlsearch
@@ -489,7 +501,7 @@ inoremap <S-Right> <ESC><C-W><Right><C-W>_
 noremap <C-L> 20zh
 noremap <C-H> 20zl
 
-if g:windows
+if g:windows && exists(':simalt')
 	" Allow Alt+Space to open the window menu (e.g. for things like Alt+Space M to move the window when it's offscreen)
 	nnoremap <M-Space> :simalt ~<CR>
 endif
