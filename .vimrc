@@ -251,11 +251,12 @@ set scrollopt=ver,hor,jump
 set showcmd
 set smartindent
 if g:vimrcdebug | echom "Group 2" | endif
-au BufNewFile,BufRead * set ts=4 sts=4 sw=4 tw=0 noet
-au BufNewFile,BufRead *.cpp.template,*.h.template set filetype=cpp
-"au BufNewFile,BufRead *.txt,*.doc,*.rtf set spell
-"au Bufread,BufNewFile *.as set filetype=actionscript
-"au Bufread,BufNewFile *.template set filetype=jinja
+autocmd BufNewFile,BufRead * set ts=4 sts=4 sw=4 tw=0 noet
+autocmd BufNewFile,BufRead *.cpp.template,*.h.template set filetype=cpp
+autocmd BufNewFile,BufRead .*vim*rc,.*vim*rc*,*vimrc* setfiletype vim
+"autocmd BufNewFile,BufRead *.txt,*.doc,*.rtf set spell
+"autocmd Bufread,BufNewFile *.as set filetype=actionscript
+"autocmd Bufread,BufNewFile *.template set filetype=jinja
 "augroup filetype
 	"au! BufRead,BufNewFile *.proto setfiletype proto
 "augroup end

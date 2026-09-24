@@ -1,0 +1,469 @@
+" .vimurc - the Vim configuration the vimulator Visual Studio extension loads.
+"
+" Started as a copy of ~/.vimrc so that Vim inside Visual Studio behaves like the
+" Vim you already know. It is loaded INSTEAD of ~/.vimrc (gvim is started with
+" -u <this file>), so your real Vim is unaffected by anything you change here,
+" and this is unaffected by anything you change there.
+"
+" Inside the extension Vim is an engine with no window: Visual Studio draws the
+" text and owns the screen. Anything that assumes a visible Vim - window splits,
+" tabs, anything that opens a prompt - either does nothing or quietly breaks a key
+" the extension needs. Those are commented out below, each marked "vimulator:"
+" with the reason.
+"
+" Add to this freely. It is yours.
+
+set runtimepath^=$HOME/.vim
+set runtimepath+=$HOME/.vim/after
+
+let g:vimrcdebug=0
+
+let g:mac=0
+let g:macvim=0
+let g:cygwin=0
+let g:windows=0
+let g:unix=0
+
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+let g:clang_library_path = '/usr/bin/clang'
+let g:SuperTabDefaultCompletionType = "<C-S-space>"
+"let g:clang_user_options='|| exit 0'
+let g:clang_user_options = '2>/dev/null || exit 0'
+"let g:clang_use_library = 1
+let g:clang_complete_auto = 0 " Whether to start completion on ->, ., ::
+let g:clang_complete_copen = 1 " Whether to open quickfix window on error
+
+filetype plugin indent on
+
+if g:vimrcdebug | echom "Running vimrc" | endif
+
+if has('win32') || has('win64')
+	if g:vimrcdebug | echom "windows" | endif
+	let g:windows=1
+endif
+
+" True for gvim, and for Neovim running under a GUI frontend like Neovide
+" (Neovim itself has no 'gui_running' concept since the GUI is a separate process)
+let g:gui_running = has('gui_running') || exists('g:neovide')
+
+set nocompatible
+
+set winaltkeys=no
+
+filetype on
+filetype plugin on
+
+if g:vimrcdebug | echom "NightDaySwap" | endif
+
+" Always start with my own colorscheme
+colorscheme nick
+
+syntax on
+
+if !g:gui_running
+	set t_Co=256
+else
+	set t_Co=512
+endif
+
+set mouse=a
+
+" TODO: Look up what this does and put a useful comment
+if has('mouse_sgr')
+    set ttymouse=sgr
+endif
+
+if g:vimrcdebug | echom "Save/Load Win Size/Position" | endif
+
+if g:vimrcdebug | echom "Group 1" | endif
+
+set autoindent
+set autoread
+set backspace=indent,eol,start
+if exists('+browsedir')
+	set browsedir=buffer
+endif
+set clipboard=unnamed
+if &diff
+	set scrollbind
+	set cursorbind
+	" Keep diff windows same size when resizing whole window
+	autocmd vimResized * wincmd =
+	"set lines=999
+else
+	if has('gui')
+		"set lines=999
+	endif
+endif
+set complete=.,w,b,u,k,s,i,d,]
+set completeopt=menu,menuone,longest
+set copyindent
+set preserveindent
+set diffopt=filler,vertical,context:20,foldcolumn:0,iwhite
+set display=lastline
+set gdefault
+set foldmethod=expr
+set nofoldenable
+set nu
+set guicursor=n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
+if g:mac || g:macvim
+	"set guifont=Monaco:h10
+	let s:font_name = 'Monaco'
+	let s:font_size = 10
+else
+	"set guifont=JetBrains_Mono:h7
+	"set guifont=Consolas:h9
+	"set guifont=Cousine:h9
+	"set guifont=Ubuntu_Mono:h10
+	"set guifont=Lucida_Console:h9
+	let s:font_name = 'Ubuntu_Mono'
+	let s:font_size = 9
+endif
+let &guifont=s:font_name.':h'.s:font_size
+function! AdjustFontSize(delta)
+	let s:font_size = max([6, s:font_size + a:delta])
+	let &guifont=s:font_name.':h'.s:font_size
+endfunction
+nnoremap <C-ScrollWheelUp> :call AdjustFontSize(1)<CR>
+nnoremap <C-ScrollWheelDown> :call AdjustFontSize(-1)<CR>
+if exists('+guioptions')
+	set guioptions=eihmtbrlaAc
+endif
+set history=2000
+set ignorecase
+set smartcase
+set infercase
+set incsearch
+set selection=inclusive
+set keymodel=startsel
+set linespace=0
+set listchars=tab:>-
+set list
+set nobackup
+set noswapfile
+if exists('+remap')
+	set noremap
+endif
+set foldopen=block,hor,mark,percent,quickfix,search,tag,undo
+set foldminlines=40
+set hlsearch
+set nowrap
+set ruler
+set scroll=1
+set sidescroll=3
+set scrolloff=3
+set sidescrolloff=10
+set noexpandtab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set scrollopt=ver,hor,jump
+set showcmd
+set smartindent
+if g:vimrcdebug | echom "Group 2" | endif
+autocmd BufNewFile,BufRead * set ts=4 sts=4 sw=4 tw=0 noet
+autocmd BufNewFile,BufRead *.cpp.template,*.h.template set filetype=cpp
+autocmd BufNewFile,BufRead .*vim*rc,.*vim*rc*,*vimrc* setfiletype vim
+"autocmd BufNewFile,BufRead *.txt,*.doc,*.rtf set spell
+"autocmd Bufread,BufNewFile *.as set filetype=actionscript
+"autocmd Bufread,BufNewFile *.template set filetype=jinja
+"augroup filetype
+	"au! BufRead,BufNewFile *.proto setfiletype proto
+"augroup end
+if g:vimrcdebug | echom "Group 3" | endif
+"set spellsuggest=fast
+set nospell
+set splitright
+set splitbelow
+set switchbuf=split
+set textwidth=0
+set undolevels=10000
+set whichwrap=b,s,<,>
+set winheight=999
+"set winwidth=999
+"set columns=999
+"set lines=999
+set wildmenu
+
+" Always start with '=' so if we reload the vimrc it doesn't keep adding onto the previous collection
+set wildignore=.DS_Store
+set wildignore+=_cache,*.abc,*.as3proj,*.bmp,*.class,*.csv,*.cxx,*.d,*.dat,*.data,*.db,*.diff,*.dio,*.dmg,*.dylib,*.exe,*.fla,*.flv,*.git,*.gitignore,*.gz,*.hg,*.idea,*.iml,*.jar,*.jpeg,*.jpg,*.LinkFileList,*.mp4,*.mpg,*.o,*.otf,*.out,*.pb.*,*.pbxproj,*.pc,*.png,*.properties,*.props,*.pyc,*.sspj,*.stamp,*.svn-base,*.swc,*.swf,*.tar.gz,*.tgz,*.ttf,*.wav,*.xconfig,*.xfl,**/.svn/**,**/.git/**
+"set wildignore+=*.i
+
+if g:vimrcdebug | echom "Group 4" | endif
+
+function! SwitchSourceHeader()
+	if (expand ("%:e") == "cpp" || expand ("%:e") == "c")
+		if filereadable(expand("%:p:r").".hpp")
+			find %:p:r.hpp
+		elseif filereadable(expand("%:p:r").".h")
+			find %:p:r.h
+  		endif
+	else
+		if filereadable(expand("%:p:r").".cpp")
+			find %:p:r.cpp
+		elseif filereadable(expand("%:p:r").".c")
+			find %:p:r.c
+  		endif
+	endif
+endfunction
+
+" Add a vim modeline to the beginning of the file
+function! AddModeline()
+  let l:modeline = printf(" vim: set ts=%d sts=%d sw=%d tw=%d %set :",
+        \ &tabstop, &softtabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("^"), l:modeline)
+endfunction
+
+function! SetSpaces(spaces)
+  exec "set tabstop=".a:spaces
+  exec "set softtabstop=".a:spaces
+  exec "set shiftwidth=".a:spaces
+  exec "set expandtab"
+endfunction
+
+function! SetTabs(spaces)
+  exec "set tabstop=".a:spaces
+  exec "set softtabstop=".a:spaces
+  exec "set shiftwidth=".a:spaces
+  exec "set noexpandtab"
+endfunction
+
+" For a list of autocmd triggers, see:
+"http://vimdoc.sourceforge.net/htmldoc/autocmd.html
+
+if g:vimrcdebug | echom "Group 5" | endif
+
+" Change working directory to current
+autocmd BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
+
+autocmd FileType python set tabstop=4 | set softtabstop=4 | set shiftwidth=4 | set expandtab
+
+" When opening a diff, make sure scrollbind is set immediately
+autocmd VimEnter * if &diff | execute 'windo set scrollbind' | endif
+
+"au FocusGained,BufEnter * :silent! !
+
+if g:vimrcdebug | echom "Group 6" | endif
+
+noremap <ESC> :noh<CR><ESC>
+
+" Tells you what Vim recognizes the current word as for highlighting
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+" CTRL+Tab between internal windows
+noremap <C-tab> <C-W>w
+inoremap <C-tab> <C-O><C-W>w
+cnoremap <C-tab> <C-C><C-W>w
+noremap <C-S-tab> <C-W><S-W>
+inoremap <C-S-tab> <C-O><C-W><S-W>
+cnoremap <C-S-tab> <C-C><C-W><S-W>
+
+
+if g:vimrcdebug | echom "Group 7" | endif
+
+noremap <leader><Tab> :call SwitchSourceHeader()<CR>
+noremap <F4> :call SwitchSourceHeader()<CR>
+noremap <S-F4> :call SwitchSourceHeader()<CR>
+
+if &diff
+	noremap <F5> :diffupdate<CR>
+else
+	noremap <S-F5> :source $MYVIMRC<CR><CR>
+endif
+
+" CTRL-Up to scroll the window up one line
+noremap <C-Up> <C-Y>
+inoremap <C-Up> <C-O><C-Y>
+cnoremap <C-Up> <C-C><C-Y>
+
+" CTRL-Down to scroll the window down one line
+noremap <C-Down> <C-E>
+inoremap <C-Down> <C-O><C-E>
+
+" This is apparently something to do with Mac, but I'm not sure what, so I
+" don't want to delete it
+inoremap <C-@> <C-X><C-O>
+inoremap <C-@> <C-P>
+" CTRL-Space to complete word or bring up completion menu (only in insert mode)
+inoremap <C-Space> <C-X><C-O>
+inoremap <C-Space> <C-P>
+
+" Jump to the last place you edited text or place where the cursor was before
+" the last jump command (jump commands are caused by searching, jumping to
+" marks, etc.)
+" Note: Since Vim uses named marks, this is the closest I could come to
+" actually setting bookmarks
+noremap <F2> <C-O>
+inoremap <F2> <C-O><C-O>
+cnoremap <F2> <C-C><C-O>
+noremap <M-O> <C-O>
+inoremap <M-O> <C-O><C-O>
+cnoremap <M-O> <C-C><C-O>
+noremap <S-F2> <C-I>
+inoremap <S-F2> <C-O><C-I>
+cnoremap <S-F2> <C-C><C-I>
+" Remap the meta key (e.g. command key on Mac) to go forward and back
+noremap <D-[> <C-O>
+inoremap <D-[> <C-O><C-O>
+cnoremap <D-[> <C-C><C-O>
+noremap <D-]> <C-I>
+inoremap <D-]> <C-O><C-I>
+cnoremap <D-]> <C-C><C-I>
+
+if &diff
+	" Find the next/previous change in a diff using F7 and F8
+	noremap <F7> [c
+	inoremap <F7> <C-O>[c
+	cnoremap <F7> <C-C>[c
+	noremap <F8> ]c
+	inoremap <F8> <C-O>]c
+	cnoremap <F8> <C-C>]c
+	" ...or with F3 and Shift-F3
+	noremap <F3> ]c
+	inoremap <F3> <C-O>]c
+	cnoremap <F3> <C-C>]c
+	noremap <S-F3> [c
+	inoremap <S-F3> <C-O>[c
+	cnoremap <S-F3> <C-C>[c
+endif
+
+function! FindInFiles(search, path)
+	"echo "Searching from '".getcwd()."', search='".a:search."', path='".a:path."'"
+	let command="noautocmd vimgrep /".a:search."/j ".a:path." | cw"
+	"echo "Command=".l:command
+	exec l:command
+endfunction
+
+noremap <C-G> :call FindInFiles('\<'.expand("<cword>").'\>', '**')<CR>
+" Note: putting left here so many times so that the cursor will end up between the search quotes
+"noremap <C-S-H> :exec "noautocmd vimgrep //j **" <Bar> cw<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+noremap <C-F> :call FindInFiles('', '**')<S-Left><Left><Left><Left>
+
+" Auto-indent every time you paste
+" Note: Disabling this because it doesn't seem to be working properly
+" noremap p ]p
+
+" Fix the arrow keys in normal mode in the terminal
+nnoremap OA k
+nnoremap OB j
+nnoremap OC l
+nnoremap OD h
+noremap OA k
+noremap OB j
+noremap OC l
+noremap OD h
+
+" Shift-Arrow to switch between splits
+" vimulator: these take over Shift+arrow, which the extension uses to extend a
+" selection. With no window to move to, they did nothing at all and Shift+arrow
+" appeared dead. Window navigation has no meaning in a windowless engine.
+"noremap <S-Up> <C-W><Up><C-W>_
+"noremap <S-Down> <C-W><Down><C-W>_
+"noremap <S-Left> <C-W><Left><C-W>_
+"noremap <S-Right> <C-W><Right><C-W>_
+"inoremap <S-Up> <ESC><C-W><Up><C-W>_
+"inoremap <S-Down> <ESC><C-W><Down><C-W>_
+"inoremap <S-Left> <ESC><C-W><Left><C-W>_
+"inoremap <S-Right> <ESC><C-W><Right><C-W>_
+
+" Ctrl-H and Ctrl-L (map these to side scrollwheel) to scroll the screen left and right
+noremap <C-L> 20zh
+noremap <C-H> 20zl
+
+if g:windows && exists(':simalt')
+	" Allow Alt+Space to open the window menu (e.g. for things like Alt+Space M to move the window when it's offscreen)
+	nnoremap <M-Space> :simalt ~<CR>
+endif
+
+" Custom settings for any given computer (i.e. my old Macbook has a lower
+" resolution screen, so I use a smaller font to fit more text
+if filereadable($HOME . "/.vimrclocal")
+	source $HOME/.vimrclocal
+endif
+
+if g:vimrcdebug | echom "Is it an Unreal file?" | endif
+
+function! s:IsUnrealFile()
+    let l:dir = expand('%:p:h')
+    while l:dir != fnamemodify(l:dir, ':h')
+        if !empty(glob(l:dir . '/*.uproject'))
+            return 1
+        endif
+        let l:dir = fnamemodify(l:dir, ':h')
+    endwhile
+    return 0
+endfunction
+
+autocmd FileType cpp,c call s:MaybeLoadUnreal()
+function! s:MaybeLoadUnreal()
+    if s:IsUnrealFile()
+        source ~/.vim/syntax/unreal.vim
+    endif
+endfunction
+
+" Add block cursor to vim specifically for cygwin
+if g:cygwin
+	let &t_ti.="\e[1 q"
+	let &t_SI.="\e[5 q"
+	let &t_EI.="\e[1 q"
+	let &t_te.="\e[0 q"
+endif
+
+if g:vimrcdebug | echom "FIN!" | endif
+
+" ---------------------------------------------------------------------------
+" vimulator: reaching back into Visual Studio
+" ---------------------------------------------------------------------------
+"
+" Vim inside the extension has no idea Go To Definition exists. :VS runs any
+" Visual Studio command by name, so a mapping here can reach them:
+"
+nnoremap gd :VS Edit.GoToDefinition<CR>
+nnoremap gh :VS VAssistX.OpenCorrespondingFile<CR>
+"   nnoremap gr :VS Edit.FindAllReferences<CR>
+"   nnoremap <F12> :VS VisualAssist.GotoImplementation<CR>
+"   nnoremap <C-o> :VS View.NavigateBackward<CR>
+"   nnoremap <C-i> :VS View.NavigateForward<CR>
+"
+" The names are Visual Studio's own, as Tools > Options > Keyboard lists them -
+" with one trap: Visual Assist registers its commands as VisualAssist.*, while
+" that dialog displays them as VAssistX.*. The displayed name does not work.
+"
+" This is also the answer when Visual Studio and Vim want the same key. Ctrl+L
+" is Edit.LineDelete in VS and a redraw in Vim; deciding who wins is just a
+" question of whether you map it here.
+"
+" And to see the engine Vim that is driving all this, without restarting:
+"
+"   :VimulatorEngine          " toggle its window
+"   :VimulatorEngine show     " or say which you want
+"   :VimulatorEngine hide
+"
+" Uncomment and adjust whichever of these you want.
+
+" The leader is a prefix key, not a modifier: <leader>w means press space, let go,
+" then press w. Space is the popular choice; comma is the other one.
+"
+" It has to be set before any mapping that uses it, because <leader> is expanded
+" when the mapping is defined rather than when it is pressed. Nothing above uses
+" <leader>, so here is early enough - but a leader mapping added higher up in this
+" file would silently still be on backslash.
+let mapleader = " "
+
+" Deliberately no `nnoremap <Space> <Nop>`, which is otherwise the usual companion
+" to a space leader. Inside the extension it would break every leader mapping:
+" keys arrive one at a time, and a key that is itself a complete mapping is sent
+" on immediately rather than held, so <Space> would fire on its own and the w
+" would never join it.
+
+nnoremap <leader>w :VS File.SaveAll<CR>
+nnoremap <leader>b :VS Build.BuildSolution<CR>
+nnoremap <leader>r :VS Edit.FindAllReferences<CR>
+nnoremap <leader>e :VS View.ErrorList<CR>
+
