@@ -118,6 +118,10 @@ repo_prompt() {
 	PS1="\[\e]0;${debian_chroot:+($debian_chroot)} \W\a\]$PS1"
 }
 
+# Set displayed tab width to 4
+export LESS='-FRX -x4'
+[ -t 1 ] && tabs 4
+
 #export PS1='[\[\033[41;1m\] LIVE \[\033[0m\]] \u@\h:\w$ '
 if [ colors ]; then
 	# Set a nice pretty prompt
@@ -150,4 +154,7 @@ if [ -f ~/.bashrc_local ]; then
 	. ~/.bashrc_local
 fi
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+# Only set up Homebrew on machines where linuxbrew is actually installed
+if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+fi
