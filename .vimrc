@@ -507,6 +507,74 @@ if g:windows && exists(':simalt')
 	nnoremap <M-Space> :simalt ~<CR>
 endif
 
+" Toggle comments on a range of lines, like Ctrl+/ in Visual Studio: if every
+" non-blank line is already commented, uncomment them all; otherwise comment
+" them all, inserting the marker at the smallest indent so the block lines up.
+" Uses &commentstring, so it works for any filetype that sets one.
+function! ToggleComment(first, last)
+	let l:cms = &commentstring
+	" Prefer line comments over /* */ for C-style languages, like VS does
+	if l:cms =~# '^\s*/\*' && &filetype =~# '^\(c\|cpp\|cs\|java\|javascript\|typescript\|glsl\|hlsl\)$'
+		let l:cms = '// %s'
+	endif
+	if l:cms !~# '%s'
+		echohl WarningMsg | echo "No commentstring set for filetype '" . &filetype . "'" | echohl None
+		return
+	endif
+	let [l:left, l:right] = map(split(l:cms, '%s', 1)[0:1], 'trim(v:val)')
+
+	let l:lines = getline(a:first, a:last)
+	let l:all_commented = 1
+	let l:min_indent = -1
+	for l:line in l:lines
+		let l:text = trim(l:line)
+		if l:text ==# ''
+			continue
+		endif
+		let l:indent = strlen(matchstr(l:line, '^\s*'))
+		if l:min_indent < 0 || l:indent < l:min_indent
+			let l:min_indent = l:indent
+		endif
+		if stridx(l:text, l:left) != 0 || (l:right !=# '' &&
+					\ (strlen(l:text) < strlen(l:left) + strlen(l:right) ||
+					\ strpart(l:text, strlen(l:text) - strlen(l:right)) !=# l:right))
+			let l:all_commented = 0
+		endif
+	endfor
+	if l:min_indent < 0
+		return " Only blank lines
+	endif
+
+	let l:lnum = a:first
+	for l:line in l:lines
+		if trim(l:line) !=# ''
+			if l:all_commented
+				let l:indent = matchstr(l:line, '^\s*')
+				let l:body = strpart(l:line, strlen(l:indent) + strlen(l:left))
+				let l:body = substitute(l:body, '^ ', '', '')
+				if l:right !=# ''
+					let l:body = substitute(l:body, '\s*$', '', '')
+					let l:body = strpart(l:body, 0, strlen(l:body) - strlen(l:right))
+					let l:body = substitute(l:body, ' $', '', '')
+				endif
+				call setline(l:lnum, l:indent . l:body)
+			else
+				call setline(l:lnum, strpart(l:line, 0, l:min_indent) . l:left . ' ' .
+							\ strpart(l:line, l:min_indent) . (l:right ==# '' ? '' : ' ' . l:right))
+			endif
+		endif
+		let l:lnum += 1
+	endfor
+endfunction
+command! -range ToggleComment call ToggleComment(<line1>, <line2>)
+
+" Ctrl+/ to toggle comments. Terminals send Ctrl+/ as Ctrl+_, so map both.
+for s:key in ['<C-/>', '<C-_>']
+	execute 'nnoremap <silent> ' . s:key . ' :ToggleComment<CR>'
+	execute 'xnoremap <silent> ' . s:key . ' :ToggleComment<CR>gv'
+	execute 'inoremap <silent> ' . s:key . ' <C-O>:ToggleComment<CR>'
+endfor
+
 " Custom settings for any given computer (i.e. my old Macbook has a lower
 " resolution screen, so I use a smaller font to fit more text
 if filereadable($HOME . "/.vimrclocal")
